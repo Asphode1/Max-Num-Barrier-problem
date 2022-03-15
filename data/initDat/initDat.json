@@ -1,0 +1,11 @@
+{
+  "name": "Initial data",
+  "ROIData": {
+    "length": 500,
+    "height": 100 
+  },
+  "sensorData":{
+    "range": 20,
+    "alpha": 0.7854
+  }
+}
