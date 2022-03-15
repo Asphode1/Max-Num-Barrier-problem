@@ -1,0 +1,1 @@
+This program uses only numpy to get infinity constant.
