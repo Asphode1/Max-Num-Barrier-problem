@@ -1,0 +1,14 @@
+{
+  "name": "max-num-barrier-problem",
+  "version": "0.0.1",
+  "description": "Python solution for Max-Num-Barrier Problem using Genetic Algorithm",
+  "main": "main/main.py",
+  "scripts": {
+    "run": "python -B -u ${workspaceFolder}\\main\\main.py"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Asphode1/Max-Num-Barrier-problem.git"
+  },
+  "author": "Mai Kien"
+}
