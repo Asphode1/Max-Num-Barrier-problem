@@ -1,1 +1,3 @@
-This program uses only numpy to get infinity constant.
+Environment: Python 3 or above
+* This program uses numpy package to get infinity constant.
+* Alternative method: change constant 'inf' in utils/distances.py to "float('inf')" and delete line 4 of the same file.
