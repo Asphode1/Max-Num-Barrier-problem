@@ -19,17 +19,19 @@ def crossover(p1: Population, p2: Population, rate: int) -> Population:
   i = 0
   j = 0
   while(i < startPos):
-    if(i in data):
+    if(p2.data[i] in data):
       i += 1
     else:
       data[j] = p2.data[i]
-      index[j] = p2.index[j]
+      index[j] = p2.index[i]
       i += 1
       j += 1
   j = startPos + crossLen
   for ind in range(i, l):
     if(p2.data[ind] in data):
       continue
+    elif(j == l):
+      break
     else:
       data[j] = p2.data[ind]
       index[j] = p2.index[ind]

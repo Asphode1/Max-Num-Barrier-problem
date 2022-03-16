@@ -8,6 +8,6 @@ from utils.Sensor import SortedSensor
 def createParent(sens: list[SortedSensor], s: int, m: int, a: float, r: int, size: int, l: int, lr: int) -> list[Population]:
   parents = [Population(s)] * size
   for i in range(size):
-    parents[i].init(l / s * 10, sens)
+    parents[i].start(l / s * 10, sens)
     parents[i].fitness = fitness(parents[i], sens, s, m, a, r, l, lr)
   return parents

@@ -8,5 +8,3 @@ def getData(index: int) -> list:
   for i in data['data']:
     sensorList.append(i)
   return sensorList
-
-print(getData(1)[0])

@@ -12,13 +12,13 @@ def parentSelect(lst: list[Population]) -> list[Population]:
   """
   index = lst.copy()
   rnd1 = randint(1, len(index) - 1)
-  index = filter(lambda x: x != rnd1, index)
+  index = [i for i in filter(lambda x: x != rnd1, index)]
   rnd2 = randint(1, len(index) - 1)
-  index = filter(lambda x: x != rnd2, index)
+  index = [i for i in filter(lambda x: x != rnd2, index)]
   rnd3 = randint(1, len(index) - 1)
-  index = filter(lambda x: x != rnd3, index)
+  index = [i for i in filter(lambda x: x != rnd3, index)]
   rnd4 = randint(1, len(index) - 1)
-  index = filter(lambda x: x != rnd4, index)
+  index = [i for i in filter(lambda x: x != rnd4, index)]
   p1: None
   p2: None
   if(lst[rnd1].fitness > lst[rnd2].fitness):

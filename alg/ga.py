@@ -24,14 +24,14 @@ def shuffle(lst: list) -> list:
 def naturalSelection(pop: list[Population], size) -> list[Population]:
   lst = sorted(pop, key=lambda x: x.fitness)
   l = size / 2
-  return shuffle(lst[0:l])
+  return shuffle(lst[0:int(l)])
 
 def getBestChild(pop: list[Population]) -> Population:
   lst = sorted(pop, key=lambda x: x.fitness, reverse=True)
   return lst[0]
 
 def ga(sSens: list[SortedSensor], s: int, m: int, a: float, r: int, l: int, lr: float, mutationRate: float, gen: int, size: int, crossRate: float) -> list[Population]:
-  parents = createParent(sSens, s, m, a, r, size)
+  parents = createParent(sSens, s, m, a, r, size, l, lr)
   count = 0
   while(count < gen):
     parents = naturalSelection(parents, size)

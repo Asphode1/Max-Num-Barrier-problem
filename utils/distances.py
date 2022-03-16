@@ -2,7 +2,7 @@ import sys
 sys.path.append('.')
 
 from numpy import inf
-from math import ceil, cos, sin, sqrt, tan, acos, pi
+from math import ceil, cos, sin, sqrt, atan, acos, pi
 
 from utils.Sensor import SortedSensor, Sensor
 from utils.Point import Point
@@ -37,7 +37,7 @@ def pointToLine(p: Point, u: Point, v: Point) -> float:
   t = ((p.x - u.x) * (v.x - u.x) + (p.y - u.y) * (v.y - u.y)) / d1 / d1
   t = max(0, min(1, t))
   d = dist(p, Point(u.x + t * (v.x - u.x), u.y + t * (v.y - u.y)))
-  if (checkObtuse(p, [u, v])):
+  if (checkObtuse(p, u, v)):
     return min(dist(p, u), dist(p, v))
   return d
 
@@ -102,13 +102,18 @@ def checkIntersect(p1: Point, q1: Point, p2: Point, q2: Point) -> bool:
   end
 """
 
-def checklineArcIntersect(p1: SortedSensor | Sensor, l1: Point, l2: Point, a: float, r: int) -> bool:
-  p = getPoint(p1, a, r)[0]
+def checklineArcIntersect(p1: SortedSensor | Sensor, l1: Point, l2: Point, angle: float, r: int) -> bool:
+  p = getPoint(p1, angle, r)[0]
+  if(l1.x - l2.x == 0):
+    return False
   a = (l1.y - l2.y) / (l1.x - l2.x)
   c = l1.y - a * l1.x
   b = -1
-  t1 = tan(b / a) + acos(- (a * p1.pos.x + b * p1.pos.y + c) / r / sqrt(a * a + b * b))
-  t2 = tan(b / a) - acos(- (a * p1.pos.x + b * p1.pos.y + c) / r / sqrt(a * a + b * b))
+  phi = (a * p1.pos.x + b * p1.pos.y + c) / r / sqrt(a * a + b * b)
+  if(phi > 1 or phi < 0):
+    return False
+  t1 = atan(b / a) + acos(-phi)
+  t2 = atan(b / a) - acos(-phi)
   if (((p.x + r * cos(t1) > l1.x and p.x + r * cos(t1) > l2.x) or
        (p.x + r * cos(t1) < l1.x and p.x + r * cos(t1) < l2.x)) and
       ((p.x + r * cos(t2) > l1.x and p.x + r * cos(t2) > l2.x) or
@@ -239,29 +244,29 @@ def strongDist(sensors: list[SortedSensor | Sensor], vi: int, vj: int, S: int, a
   else:
     p1 = getPoint(sensors[vi - 1], a, r)
     p2 = getPoint(sensors[vj - 1], a, r)
-    min = min(minPointDist(p1, p2),
-              arcDist(sensors[vi - 1], sensors[vj - 1], a, r),
-              lineArcDist(sensors[vi - 1], sensors[vj - 1], a, r),
-              lineArcDist(sensors[vj - 1], sensors[vi - 1], a, r),
-              pointArcDist(p1[0], sensors[vj - 1], a, r),
-              pointArcDist(p1[1], sensors[vj - 1], a, r),
-              pointArcDist(p1[2], sensors[vj - 1], a, r),
-              pointArcDist(p2[0], sensors[vi - 1], a, r),
-              pointArcDist(p2[1], sensors[vi - 1], a, r),
-              pointArcDist(p2[2], sensors[vi - 1], a, r),
-              pointToLine(p1[0], p2[0], p2[1]),
-              pointToLine(p1[0], p2[0], p2[2]),
-              pointToLine(p1[1], p2[0], p2[1]),
-              pointToLine(p1[1], p2[0], p2[2]),
-              pointToLine(p1[2], p2[0], p2[1]),
-              pointToLine(p1[2], p2[0], p2[2]),
-              pointToLine(p2[0], p1[0], p1[1]),
-              pointToLine(p2[0], p1[0], p1[2]),
-              pointToLine(p2[1], p1[0], p1[1]),
-              pointToLine(p2[1], p1[0], p1[2]),
-              pointToLine(p2[2], p1[0], p1[1]),
-              pointToLine(p2[2], p1[0], p1[2]))
-    return min
+    minDist = min(minPointDist(p1, p2),
+                  arcDist(sensors[vi - 1], sensors[vj - 1], a, r),
+                  lineArcDist(sensors[vi - 1], sensors[vj - 1], a, r),
+                  lineArcDist(sensors[vj - 1], sensors[vi - 1], a, r),
+                  pointArcDist(p1[0], sensors[vj - 1], a, r),
+                  pointArcDist(p1[1], sensors[vj - 1], a, r),
+                  pointArcDist(p1[2], sensors[vj - 1], a, r),
+                  pointArcDist(p2[0], sensors[vi - 1], a, r),
+                  pointArcDist(p2[1], sensors[vi - 1], a, r),
+                  pointArcDist(p2[2], sensors[vi - 1], a, r),
+                  pointToLine(p1[0], p2[0], p2[1]),
+                  pointToLine(p1[0], p2[0], p2[2]),
+                  pointToLine(p1[1], p2[0], p2[1]),
+                  pointToLine(p1[1], p2[0], p2[2]),
+                  pointToLine(p1[2], p2[0], p2[1]),
+                  pointToLine(p1[2], p2[0], p2[2]),
+                  pointToLine(p2[0], p1[0], p1[1]),
+                  pointToLine(p2[0], p1[0], p1[2]),
+                  pointToLine(p2[1], p1[0], p1[1]),
+                  pointToLine(p2[1], p1[0], p1[2]),
+                  pointToLine(p2[2], p1[0], p1[1]),
+                  pointToLine(p2[2], p1[0], p1[2]))
+    return minDist
 
 def minNum(sensors: list[SortedSensor | Sensor], vi: int, vj: int, s: int, a: float, r: int, l: int, lr: float) -> int:
   return ceil(strongDist(sensors, vi, vj, s, a, r, l) / lr)

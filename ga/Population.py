@@ -14,8 +14,9 @@ class Population:
   def __init__(self, n: int) -> None:
     self.length = n
     for i in range(n):
-      self.data.append(i)
+      self.data.append(i + 1)
       self.index.append(0)
+    self.index[-1] = 1
 
   def update(self, data: list[int], index: list[int]):
     self.data = data
