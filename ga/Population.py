@@ -1,6 +1,7 @@
 import sys
 sys.path.append('.')
 
+from math import sqrt
 from random import randint, random
 
 from utils.Sensor import SortedSensor
@@ -36,5 +37,18 @@ class Population:
       self.index[rndi] = int(not self.index[rndi])
     return self
 
-  def start(self, delta: float, arr: list[SortedSensor]):
-    return self
+  def start(self, lstSensor: list[SortedSensor]):
+    l = len(lstSensor)
+    lst = lstSensor.copy()
+    start = []
+    index = [i for i in range(0, l)]
+    leftSensor = lst[0:10]
+    lst = lst[10::1]
+    while(len(index)):
+      while(len(leftSensor)):
+        rnd = randint(0, len(leftSensor) - 1)
+        current = leftSensor[rnd]
+        leftSensor.remove(current)
+        next = []
+        while(len(next < 10)):
+          return
