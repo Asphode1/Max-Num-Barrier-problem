@@ -1,3 +1,4 @@
+from email.policy import default
 import sys
 sys.path.append('.')
 
@@ -67,7 +68,8 @@ def startGA():
   f = open(savePath, 'x')
   f.write(json.dumps(obj))
   f.close()
-  print(k)
+  print('Data saved in' + savePath)
+  print('k =', k)
 
 # start program using Greedy Algorithm
 def startGreedy():
@@ -76,7 +78,33 @@ def startGreedy():
   weight = createWeight(sensorList, S, A, R, L, LARGEST_RANGE)
   sensorGraph = WBG(S + 2, weight)
   k = greedy(sensorGraph, S, M, L, LARGEST_RANGE)
-  print(k)
+  print('#######################################')
+  print('# Data pack =', DATA_PACK)
+  print('# L =', L)
+  print('# H =', H)
+  print('# Number of Stationary Sensor =', S)
+  print('# Number of Mobile Sensor =', M)
+  print('# Sensing Range =', R)
+  print('# Sensing Angle =', A)
+  print('# Maximum Barrier =', k)
+  print('#######################################')
 
-# example
-startGreedy()
+# main function
+def start():
+  print('PROGRAM TO SOLVE MAX-NUM BARRIER PROBLEM')
+  print('+ Select solving method:')
+  print('1. Genetic Algorithm')
+  print('2. Greedy Algorithm')
+  i = int(input('Method: '))
+  while(i != 1 and i != 2):
+    i = int(input('Wrong input, try again:'))
+  match i:
+    case 1:
+      print('\nUsing Genetic Algorithm\n')
+      startGA()
+      exit()
+    case 2:
+      print('\nUsing Greedy Algorithm\n')
+      startGreedy()
+
+start()
