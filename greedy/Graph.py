@@ -107,14 +107,14 @@ class WBG:
       if(u == t):
         break
       for i in range(self.vertex):
-        if(self.edge[u][i] == 0 and i in set):
+        if(self.edge[u][i] != 0 and (i in set)):
           alt = dist[u] + self.weight[u][i]
           if(alt < dist[i]):
             dist[i] = alt
             prev[i] = u
     path = []
     tmp = t
-    if(prev[tmp] != None and u == s):
+    if(prev[tmp] != None or u == s):
       while(tmp != None):
         path.insert(0, tmp)
         tmp = prev[tmp]

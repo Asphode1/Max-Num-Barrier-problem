@@ -162,17 +162,17 @@ def weakDist(sensors: list[SortedSensor | Sensor], vi: int, vj: int, S: int, a: 
     if (vjx <= 0):
       return 0
     return vjx
-  elif (vj == 0):
+  if (vj == 0):
     vix = calcX(sensors[vi - 1], a, r)[0]
     if (vix <= 0):
       return 0
     return vix
-  elif (vi == S + 1):
+  if (vi == S + 1):
     vjx = calcX(sensors[vj - 1], a, r)[1]
     if (vjx >= l):
       return 0
     return l - vjx
-  elif (vj == S + 1):
+  if (vj == S + 1):
     vix = calcX(sensors[vi - 1], a, r)[1]
     if (vix >= l):
       return 0
@@ -237,9 +237,9 @@ def pointArcDist(p: Point, s: SortedSensor | Sensor, a: float, r: int) -> float:
 def strongDist(sensors: list[SortedSensor | Sensor], vi: int, vj: int, S: int, a: float, r: int, l: int) -> float:
   if(vi == vj):
     return 0
-  elif(vi == 0 or vj == 0 or vi == S + 1 or vj == S + 1):
+  if(vi == 0 or vj == 0 or vi == S + 1 or vj == S + 1):
     return weakDist(sensors, vi, vj, S, a, r, l)
-  elif(checkSensorOverlap(sensors[vi - 1], sensors[vj - 1], a, r)):
+  if(checkSensorOverlap(sensors[vi - 1], sensors[vj - 1], a, r)):
     return 0
   else:
     p1 = getPoint(sensors[vi - 1], a, r)

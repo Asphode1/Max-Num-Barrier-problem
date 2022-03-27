@@ -22,7 +22,7 @@ class SortedSensor(Sensor):
     self.index = index
     self.isMobile = False
 
-def createSensor(dat: list, s: int, a: float) -> list[Sensor]:
+def createSensor(dat: list, s: int) -> list[Sensor]:
   sensors = []
   for i in range(s):
     sensors.append(Sensor(Point(dat[i]['pos']['x'], dat[i]['pos']['y']), dat[i]['beta'], False))

@@ -1,15 +1,15 @@
-from math import pi, sin
 import sys
 sys.path.append('.')
 
 import json
 from datetime import datetime
+from math import pi, sin
 
 from utils.Sensor import createSensor
-from greedy.createGraph import createWeight
-from greedy.Graph import WBG
 from alg.ga import ga, getBestChild
 from alg.greedy import greedy
+from greedy.createGraph import createWeight
+from greedy.Graph import WBG
 from ga.getData import getData
 from ga.initSensor import initSensor
 
@@ -35,13 +35,14 @@ MUTATION_RATE = 0.05      # Default: 0.05
 POPULATION_SIZE = 1000    # Default: 1000
 DELTA = L / S * 10        # Default: 25
 
-# Start program
+# calculate Largest Range of sensor
 LARGEST_RANGE = 0
 if(0 <= A and A <= pi / 2):
   LARGEST_RANGE = max(R, 2 * R * sin(A))
 else:
   LARGEST_RANGE = 2 * R
 
+# start program using Genetic Algorithm
 def startGA():
   dataList = getData(DATA_PACK)
   sensorList = createSensor(dataList, S, A)
@@ -68,12 +69,14 @@ def startGA():
   f.close()
   print(k)
 
+# start program using Greedy Algorithm
 def startGreedy():
   dataList = getData(DATA_PACK)
-  sensorList = createSensor(dataList, S, A)
+  sensorList = createSensor(dataList, S)
   weight = createWeight(sensorList, S, A, R, L, LARGEST_RANGE)
   sensorGraph = WBG(S + 2, weight)
   k = greedy(sensorGraph, S, M, L, LARGEST_RANGE)
   print(k)
 
+# example
 startGreedy()
