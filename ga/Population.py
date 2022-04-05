@@ -18,6 +18,7 @@ class Population:
       self.data.append(i + 1)
       self.index.append(0)
     self.index[-1] = 1
+    return self
 
   def update(self, data: list[int], index: list[int]):
     self.data = data
@@ -50,5 +51,5 @@ class Population:
         current = leftSensor[rnd]
         leftSensor.remove(current)
         next = []
-        while(len(next < 10)):
+        while(len(next) < 10):
           return

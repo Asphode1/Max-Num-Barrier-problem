@@ -6,13 +6,14 @@ import json
 from datetime import datetime
 from math import pi, sin
 
-from utils.Sensor import createSensor
+from utils.Sensor import createStatinarySensor, createSensor
 from alg.ga import ga, getBestChild
 from alg.greedy import greedy
 from greedy.createGraph import createWeight
 from greedy.Graph import WBG
 from ga.getData import getData
 from ga.initSensor import initSensor
+from visualize.plot import visualize
 
 # get initial data
 path = './data/initDat/initDat.json'
@@ -46,7 +47,7 @@ else:
 # start program using Genetic Algorithm
 def startGA():
   dataList = getData(DATA_PACK)
-  sensorList = createSensor(dataList, S, A)
+  sensorList = createStatinarySensor(dataList, S, A)
   sortedSensor = initSensor(sensorList)
   parents = ga(sortedSensor, S, M, A, R, L, LARGEST_RANGE, MUTATION_RATE,
                MAX_GENERATION, POPULATION_SIZE, CROSSOVER_RATE)
@@ -74,7 +75,9 @@ def startGA():
 # start program using Greedy Algorithm
 def startGreedy():
   dataList = getData(DATA_PACK)
-  sensorList = createSensor(dataList, S)
+  sensorList = createStatinarySensor(dataList, S)
+  allSensors = createSensor(dataList, S, M)
+  visualize(allSensors, A, R)
   weight = createWeight(sensorList, S, A, R, L, LARGEST_RANGE)
   sensorGraph = WBG(S + 2, weight)
   k = greedy(sensorGraph, S, M, L, LARGEST_RANGE)
@@ -100,11 +103,11 @@ def start():
     i = int(input('Wrong input, try again:'))
   match i:
     case 1:
-      print('\nUsing Genetic Algorithm\n')
+      print('Using Genetic Algorithm')
       startGA()
       exit()
     case 2:
-      print('\nUsing Greedy Algorithm\n')
+      print('Using Greedy Algorithm')
       startGreedy()
 
 start()
