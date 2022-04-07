@@ -4,26 +4,23 @@ sys.path.append('.')
 from utils.Point import Point
 
 class Sensor:
-  pos = Point(0, 0)
-  beta = 0
-  isMobile = False
-
-  def __init__(self, pos: Point, beta: float, isMobile: bool) -> None:
+  def __init__(self, pos: Point, range: float, beta: float, alpha: float) -> None:
     self.pos = pos
     self.beta = beta
-    self.isMobile = isMobile
+    self.range = range
+    self.alpha = alpha
 
 class SortedSensor(Sensor):
-  index = 0
-
-  def __init__(self, pos: Point, beta: float, index: int) -> None:
+  def __init__(self, pos: Point, range: float, beta: float, alpha: float, index: int) -> None:
     self.pos = pos
+    self.range = range
     self.beta = beta
+    self.alpha = alpha
     self.index = index
-    self.isMobile = False
 
 def createSensor(dat: list, s: int) -> list[Sensor]:
   sensors = []
   for i in range(s):
-    sensors.append(Sensor(Point(dat[i]['pos']['x'], dat[i]['pos']['y']), dat[i]['beta'], False))
+    sensors.append(Sensor(Point(float(dat[i]['pos']['x']), float(dat[i]['pos']['y'])),
+                   float(dat[i]['range']), float(dat[i]['beta']), float(dat[i]['alpha'])))
   return sensors

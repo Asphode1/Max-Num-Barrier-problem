@@ -7,19 +7,22 @@ from math import ceil, cos, sin, sqrt, atan, acos, pi
 from utils.Sensor import SortedSensor, Sensor
 from utils.Point import Point
 
-def calcPointCircle(pos: Point, beta: float, alpha: float, r: int) -> list:
-  x1 = pos.x + r * cos(beta)
-  y1 = pos.y + r * sin(beta)
-  x2 = pos.x + r * cos(beta + 2 * alpha)
-  y2 = pos.y + r * sin(beta + 2 * alpha)
+def largestRange(sensor: Sensor):
+  return max(sensor.range, 2 * sensor.range * sin(sensor.alpha)) if 0 <= sensor.alpha and sensor.alpha <= pi / 2 else 2 * sensor.range
+
+def calcPointCircle(sensor: Sensor) -> list:
+  x1 = sensor.pos.x + sensor.range * cos(sensor.beta)
+  y1 = sensor.pos.y + sensor.range * sin(sensor.beta)
+  x2 = sensor.pos.x + sensor.range * cos(sensor.beta + 2 * sensor.alpha)
+  y2 = sensor.pos.y + sensor.range * sin(sensor.beta + 2 * sensor.alpha)
   return [x1, y1, x2, y2]
 
 def dist(u: Point, v: Point) -> float:
   return sqrt((u.x - v.x)**2 + (u.y - v.y)**2)
 
-def getPoint(s: SortedSensor | Sensor, a: float, r: int) -> list[Point]:
+def getPoint(s: SortedSensor | Sensor) -> list[Point]:
   p1 = Point(s.pos.x, s.pos.y)
-  pos2 = calcPointCircle(s.pos, s.beta, a, r)
+  pos2 = calcPointCircle(s)
   p2 = Point(pos2[0], pos2[1])
   p3 = Point(pos2[2], pos2[3])
   return [p1, p2, p3]
@@ -102,84 +105,84 @@ def checkIntersect(p1: Point, q1: Point, p2: Point, q2: Point) -> bool:
   end
 """
 
-def checklineArcIntersect(p1: SortedSensor | Sensor, l1: Point, l2: Point, angle: float, r: int) -> bool:
-  p = getPoint(p1, angle, r)[0]
+def checklineArcIntersect(p1: SortedSensor | Sensor, l1: Point, l2: Point) -> bool:
+  p = getPoint(p1)[0]
   if(l1.x - l2.x == 0):
     return False
   a = (l1.y - l2.y) / (l1.x - l2.x)
   c = l1.y - a * l1.x
   b = -1
-  phi = (a * p1.pos.x + b * p1.pos.y + c) / r / sqrt(a * a + b * b)
+  phi = (a * p1.pos.x + b * p1.pos.y + c) / p1.range / sqrt(a * a + b * b)
   if(phi > 1 or phi < 0):
     return False
   t1 = atan(b / a) + acos(-phi)
   t2 = atan(b / a) - acos(-phi)
-  if (((p.x + r * cos(t1) > l1.x and p.x + r * cos(t1) > l2.x) or
-       (p.x + r * cos(t1) < l1.x and p.x + r * cos(t1) < l2.x)) and
-      ((p.x + r * cos(t2) > l1.x and p.x + r * cos(t2) > l2.x) or
-       (p.x + r * cos(t2) < l1.x and p.x + r * cos(t2) < l2.x))):
+  if (((p.x + p1.range * cos(t1) > l1.x and p.x + p1.range * cos(t1) > l2.x) or
+       (p.x + p1.range * cos(t1) < l1.x and p.x + p1.range * cos(t1) < l2.x)) and
+      ((p.x + p1.range * cos(t2) > l1.x and p.x + p1.range * cos(t2) > l2.x) or
+       (p.x + p1.range * cos(t2) < l1.x and p.x + p1.range * cos(t2) < l2.x))):
     return False
   if ((p1.beta <= t1 and t1 <= p1.beta + 2 * a) or (p1.beta <= t2 and t2 <= p1.beta + 2 * a)):
     return True
   return False
 
-def checkArcIntersect(p1: SortedSensor | Sensor, p2: SortedSensor | Sensor, a: float, r: int) -> bool:
-  if (dist(p1.pos, p2.pos) - 2 * r > 0):
+def checkArcIntersect(p1: SortedSensor | Sensor, p2: SortedSensor | Sensor) -> bool:
+  if (dist(p1.pos, p2.pos) - p1.range - p2.range > 0):
     return False
-  elif (dist(p1.pos, p2.pos) - 2 * r <= 0):
-    pa = getPoint(p1, a, r)
-    pb = getPoint(p2, a, r)
+  elif (dist(p1.pos, p2.pos) - p1.range - p2.range <= 0):
+    pa = getPoint(p1)
+    pb = getPoint(p2)
     if (checkIntersect(pa[1], pa[2], p1.pos, p2.pos) and checkIntersect(pb[1], pb[2], p1.pos, p2.pos)):
       return True
   return False
 
-def checkSensorOverlap(s1: SortedSensor | Sensor, s2: SortedSensor | Sensor, a: float, r: int) -> bool:
-  ps1 = getPoint(s1, a, r)
-  ps2 = getPoint(s2, a, r)
+def checkSensorOverlap(s1: SortedSensor | Sensor, s2: SortedSensor | Sensor) -> bool:
+  ps1 = getPoint(s1)
+  ps2 = getPoint(s2)
   return (checkIntersect(ps1[0], ps1[1], ps2[0], ps2[1]) or
           checkIntersect(ps1[0], ps1[2], ps2[0], ps2[2]) or
           checkIntersect(ps1[0], ps1[1], ps2[0], ps2[2]) or
           checkIntersect(ps1[0], ps1[2], ps2[0], ps2[1]) or
-          checklineArcIntersect(s1, ps2[0], ps2[1], a, r) or
-          checklineArcIntersect(s2, ps1[0], ps1[1], a, r) or
-          checklineArcIntersect(s1, ps2[0], ps2[2], a, r) or
-          checklineArcIntersect(s2, ps1[0], ps1[2], a, r) or
-          checkArcIntersect(s1, s2, a, r))
+          checklineArcIntersect(s1, ps2[0], ps2[1]) or
+          checklineArcIntersect(s2, ps1[0], ps1[1]) or
+          checklineArcIntersect(s1, ps2[0], ps2[2]) or
+          checklineArcIntersect(s2, ps1[0], ps1[2]) or
+          checkArcIntersect(s1, s2))
 
-def calcX(s: SortedSensor | Sensor, a: float, r: int) -> list[float]:
-  ps = getPoint(s, a, r)
+def calcX(s: SortedSensor | Sensor) -> list[float]:
+  ps = getPoint(s)
   if (s.beta > pi / 2 and s.beta < pi):
-    return [ps[0].x - r, ps[0].x]
+    return [ps[0].x - s.range, ps[0].x]
   if (s.beta < 2 * pi and s.beta > (pi * 3) / 2):
-    return [ps[0].x, ps[0].x + r]
+    return [ps[0].x, ps[0].x + s.range]
   lst = [min(ps[0].x, ps[1].x, ps[2].x)]
   lst.append(max(ps[0].x, ps[1].x, ps[2].x))
   return lst
 
-def weakDist(sensors: list[SortedSensor | Sensor], vi: int, vj: int, S: int, a: float, r: int, l: int) -> float:
+def weakDist(sensors: list[SortedSensor | Sensor], vi: int, vj: int, S: int, l: int) -> float:
   if (vi == 0):
-    vjx = calcX(sensors[vj - 1], a, r)[0]
+    vjx = calcX(sensors[vj - 1])[0]
     if (vjx <= 0):
       return 0
     return vjx
   if (vj == 0):
-    vix = calcX(sensors[vi - 1], a, r)[0]
+    vix = calcX(sensors[vi - 1])[0]
     if (vix <= 0):
       return 0
     return vix
   if (vi == S + 1):
-    vjx = calcX(sensors[vj - 1], a, r)[1]
+    vjx = calcX(sensors[vj - 1])[1]
     if (vjx >= l):
       return 0
     return l - vjx
   if (vj == S + 1):
-    vix = calcX(sensors[vi - 1], a, r)[1]
+    vix = calcX(sensors[vi - 1])[1]
     if (vix >= l):
       return 0
     return l - vix
   else:
-    [x11, x12] = calcX(sensors[vi - 1], a, r)
-    [x21, x22] = calcX(sensors[vj - 1], a, r)
+    [x11, x12] = calcX(sensors[vi - 1])
+    [x21, x22] = calcX(sensors[vj - 1])
     if (x12 < x21):
       return x21 - x12
     if (x11 > x22):
@@ -197,21 +200,21 @@ def minPointDist(a1: list[Point], a2: list[Point]) -> float:
         min = dist(i, j)
   return min
 
-def arcDist(s1: SortedSensor | Sensor, s2: SortedSensor | Sensor, a: float, r: int) -> float:
-  p1 = getPoint(s1, a, r)
-  p2 = getPoint(s2, a, r)
+def arcDist(s1: SortedSensor | Sensor, s2: SortedSensor | Sensor) -> float:
+  p1 = getPoint(s1)
+  p2 = getPoint(s2)
   if (checkIntersect(p1[0], p2[0], p1[1], p1[2]) and checkIntersect(p1[0], p2[0], p2[1], p2[2])):
-    return dist(p1[0], p2[0]) - 2 * r
+    return dist(p1[0], p2[0]) - s1.range - s2.range
   return inf
 
-def lineArcDist(s1: SortedSensor | Sensor, s2: SortedSensor | Sensor, a: float, r: int) -> float:
-  p1 = getPoint(s1, a, r)
+def lineArcDist(s1: SortedSensor | Sensor, s2: SortedSensor | Sensor) -> float:
+  p1 = getPoint(s1)
   min = inf
-  gamma1 = [s1.beta + pi / 2, s1.beta - pi / 2, s1.beta + 2 * a + pi / 2, s1.beta + 2 * a - pi / 2]
+  gamma1 = [s1.beta + pi / 2, s1.beta - pi / 2, s1.beta + 2 * s1.alpha + pi / 2, s1.beta + 2 * s1.alpha - pi / 2]
   for i in gamma1:
-    if((s2.beta < i and i < s2.beta + 2 * a)):
-      x = s2.pos.x + r * cos(i)
-      y = s2.pos.y + r * sin(i)
+    if((s2.beta < i and i < s2.beta + 2 * s1.alpha)):
+      x = s2.pos.x + s2.range * cos(i)
+      y = s2.pos.y + s2.range * sin(i)
       if(checkObtuse(Point(x, y), p1[0], p1[1])):
         min = pointToLine(Point(x, y), p1[0], p1[1])
       if(checkObtuse(Point(x, y), p1[0], p1[2]) and pointToLine(Point(x, y), p1[0], p1[2]) < min):
@@ -226,34 +229,34 @@ def getAngle(p: Point, q: Point) -> float:
     return pi * 2 - a
   return inf
 
-def pointArcDist(p: Point, s: SortedSensor | Sensor, a: float, r: int) -> float:
-  ps = getPoint(s, a, r)
-  if(dist(p, ps[0]) <= r):
+def pointArcDist(p: Point, s: SortedSensor | Sensor) -> float:
+  ps = getPoint(s)
+  if(dist(p, ps[0]) <= s.range):
     return inf
-  if(s.beta < getAngle(p, ps[0]) and getAngle(p, ps[0]) < s.beta + 2 * a):
-    return dist(p, ps[0]) - r
+  if(s.beta < getAngle(p, ps[0]) and getAngle(p, ps[0]) < s.beta + 2 * s.alpha):
+    return dist(p, ps[0]) - s.range
   return inf
 
-def strongDist(sensors: list[SortedSensor | Sensor], vi: int, vj: int, S: int, a: float, r: int, l: int) -> float:
+def strongDist(sensors: list[SortedSensor | Sensor], vi: int, vj: int, S: int, l: int) -> float:
   if(vi == vj):
     return 0
   if(vi == 0 or vj == 0 or vi == S + 1 or vj == S + 1):
-    return weakDist(sensors, vi, vj, S, a, r, l)
-  if(checkSensorOverlap(sensors[vi - 1], sensors[vj - 1], a, r)):
+    return weakDist(sensors, vi, vj, S, l)
+  if(checkSensorOverlap(sensors[vi - 1], sensors[vj - 1])):
     return 0
   else:
-    p1 = getPoint(sensors[vi - 1], a, r)
-    p2 = getPoint(sensors[vj - 1], a, r)
+    p1 = getPoint(sensors[vi - 1])
+    p2 = getPoint(sensors[vj - 1])
     minDist = min(minPointDist(p1, p2),
-                  arcDist(sensors[vi - 1], sensors[vj - 1], a, r),
-                  lineArcDist(sensors[vi - 1], sensors[vj - 1], a, r),
-                  lineArcDist(sensors[vj - 1], sensors[vi - 1], a, r),
-                  pointArcDist(p1[0], sensors[vj - 1], a, r),
-                  pointArcDist(p1[1], sensors[vj - 1], a, r),
-                  pointArcDist(p1[2], sensors[vj - 1], a, r),
-                  pointArcDist(p2[0], sensors[vi - 1], a, r),
-                  pointArcDist(p2[1], sensors[vi - 1], a, r),
-                  pointArcDist(p2[2], sensors[vi - 1], a, r),
+                  arcDist(sensors[vi - 1], sensors[vj - 1]),
+                  lineArcDist(sensors[vi - 1], sensors[vj - 1]),
+                  lineArcDist(sensors[vj - 1], sensors[vi - 1]),
+                  pointArcDist(p1[0], sensors[vj - 1]),
+                  pointArcDist(p1[1], sensors[vj - 1]),
+                  pointArcDist(p1[2], sensors[vj - 1]),
+                  pointArcDist(p2[0], sensors[vi - 1]),
+                  pointArcDist(p2[1], sensors[vi - 1]),
+                  pointArcDist(p2[2], sensors[vi - 1]),
                   pointToLine(p1[0], p2[0], p2[1]),
                   pointToLine(p1[0], p2[0], p2[2]),
                   pointToLine(p1[1], p2[0], p2[1]),
@@ -268,5 +271,5 @@ def strongDist(sensors: list[SortedSensor | Sensor], vi: int, vj: int, S: int, a
                   pointToLine(p2[2], p1[0], p1[2]))
     return minDist
 
-def minNum(sensors: list[SortedSensor | Sensor], vi: int, vj: int, s: int, a: float, r: int, l: int, lr: float) -> int:
-  return ceil(strongDist(sensors, vi, vj, s, a, r, l) / lr)
+def minNum(sensors: list[SortedSensor | Sensor], vi: int, vj: int, s: int, l: int, lr: float) -> int:
+  return ceil(strongDist(sensors, vi, vj, s, l) / lr)

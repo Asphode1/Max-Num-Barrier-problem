@@ -11,32 +11,33 @@ from alg.ga import ga, getBestChild
 from alg.greedy import greedy
 from greedy.createGraph import createWeight
 from greedy.Graph import WBG
-from ga.getData import getData
+from data.getData import getData
 from ga.initSensor import initSensor
 
 # get initial data
-path = './data/initDat/initDat.json'
+
+L = 40        # length of ROI
+H = 200       # height of ROI
+
+path = './data/initData/data_' + str(L) + '_' + str(H) + '.json'
 f = open(path, 'r')
 data = json.loads(f.read())
 
-L = int(data['ROIData']['length'])       # length of ROI, default: 500
-H = int(data['ROIData']['height'])       # height of ROI, default: 100
-R = int(data['sensorData']['range'])     # sensor sensing range, default: 20
-A = float(data['sensorData']['alpha'])   # sensor sensing angle, default: pi/4 = 0.7854
-
-# Sensor constants
-S = 200            # Number of stationary sensors, default: 200, maximum: 300
-M = 50             # Number of mobile sensors, default: 50, maximum: 100
-DATA_PACK = 1      # Index of data pack, from 1 to 10.
+R = int(data['sensorData']['range'])     # mobile sensor sensing range
+A = float(data['sensorData']['alpha'])   # mobile sensor sensing angle
+S = int(data['sSensor'])                 # Number of stationary sensors
+M = int(data['mSensor'])                 # Number of mobile sensors
+DATA_PACK = 1                            # Index of data pack, from 1 to 10.
 
 # GA constants
+
 MAX_GENERATION = 1000     # Default: 1000
 CROSSOVER_RATE = 0.8      # Default: 0.8
 MUTATION_RATE = 0.05      # Default: 0.05
 POPULATION_SIZE = 1000    # Default: 1000
 DELTA = L / S * 10        # Default: 25
 
-# calculate Largest Range of sensor
+# calculate Largest Range of Mobile sensor
 LARGEST_RANGE = 0
 if(0 <= A and A <= pi / 2):
   LARGEST_RANGE = max(R, 2 * R * sin(A))
@@ -73,9 +74,9 @@ def startGA():
 
 # start program using Greedy Algorithm
 def startGreedy():
-  dataList = getData(DATA_PACK)
+  dataList = getData(DATA_PACK, L, H)
   sensorList = createSensor(dataList, S)
-  weight = createWeight(sensorList, S, A, R, L, LARGEST_RANGE)
+  weight = createWeight(sensorList, S, L, LARGEST_RANGE)
   sensorGraph = WBG(S + 2, weight)
   k = greedy(sensorGraph, S, M, L, LARGEST_RANGE)
   print('#######################################')
