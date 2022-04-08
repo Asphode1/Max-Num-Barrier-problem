@@ -269,7 +269,7 @@ def strongDist(sensors: list[SortedSensor | Sensor], vi: int, vj: int, S: int, l
                   pointToLine(p2[1], p1[0], p1[2]),
                   pointToLine(p2[2], p1[0], p1[1]),
                   pointToLine(p2[2], p1[0], p1[2]))
-    return minDist
+  return minDist
 
 def minNum(sensors: list[SortedSensor | Sensor], vi: int, vj: int, s: int, l: int, lr: float) -> int:
   return ceil(strongDist(sensors, vi, vj, s, l) / lr)
