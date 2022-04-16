@@ -1,3 +1,1 @@
 Environment: Python 3 or above
-* This program uses numpy package to get infinity constant.
-* Alternative method: change constant 'inf' in utils/distances.py and greedy/Graph.py to "float('inf')" and delete import line of the same file.

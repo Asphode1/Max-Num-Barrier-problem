@@ -1,4 +1,8 @@
 from math import inf
+from random import shuffle
+
+from utils.Sensor import Sensor
+from utils.distances import strongDist
 
 class WBG:
   def __init__(self, v: int, weight: list[list[int]]):
@@ -6,16 +10,23 @@ class WBG:
     self.weight = weight
     edge = [None] * v
     for i in range(v):
-      edge[i] = [1] * v
-      edge[i][i] = 0
-    edge[0][v - 1] = 0
-    edge[v - 1][0] = 0
+      edge[i] = [0] * v
     self.edge = edge
 
   def addEdge(self, v1: int, v2: int):
     self.edge[v1][v2] = 1
     self.edge[v2][v1] = 1
     return self
+
+  def updateEdge(self, edge: list[list[int]]):
+    self.edge = edge
+    return self
+
+  def initEdge(self, sensors: list[Sensor], maxDist: float):
+    for i in range(self.vertex):
+      for j in range(self.vertex):
+        if(strongDist(sensors, i, j) <= maxDist and i != j):
+          self.edge[i][j] = 1
 
   def removeEdge(self, v1: int, v2: int):
     self.edge[v1][v2] = 0
@@ -119,3 +130,33 @@ class WBG:
         path.insert(0, tmp)
         tmp = prev[tmp]
     return [path, dist[t]]
+
+class BG(WBG):
+  def __init__(self, v: int):
+    self.vertex = v
+    edge = [None] * v
+    for i in range(v):
+      edge[i] = [0] * v
+    self.edge = edge
+
+  def getNeighbors(self, s: int) -> list[int]:
+    nb = []
+    for i in range(self.vertex):
+      if(self.edge[s][i] != 0):
+        nb.append(i)
+    shuffle(nb)
+    return nb
+
+  def recurRDFS(self, v: int, visited: list[int], path: list[int]) -> None:
+    visited[v] = True
+    path.append(v)
+    nb = self.getNeighbors(v)
+    for i in range(len(nb)):
+      if(not visited[nb[i]]):
+        self.recurRDFS(nb[i], visited, path)
+
+  def randomizedDFS(self, v: int) -> list[int]:
+    path = []
+    visited = [False] * self.vertex
+    self.recurRDFS(v, visited, path)
+    return path

@@ -1,4 +1,3 @@
-from email.policy import default
 import sys
 sys.path.append('.')
 
@@ -27,7 +26,7 @@ R = int(data['sensorData']['range'])     # mobile sensor sensing range
 A = float(data['sensorData']['alpha'])   # mobile sensor sensing angle
 S = int(data['sSensor'])                 # Number of stationary sensors
 M = int(data['mSensor'])                 # Number of mobile sensors
-DATA_PACK = 1                            # Index of data pack, from 1 to 10.
+DATA_PACK = 2                            # Index of data pack, from 1 to 10.
 
 # GA constants
 
@@ -60,11 +59,11 @@ def startGA():
   savePath = './saves/' + nowshort + '.json'
 
   obj = {
-      'name': 'Saved data at ' + nowLong,
-      'method: Genetic Algorithm'
-      'population': [vars(i) for i in parents],
-      'best child': vars(child),
-      'max barrier': k
+    'name': 'Saved data at ' + nowLong,
+    'method: Genetic Algorithm'
+    'population': [vars(i) for i in parents],
+    'best child': vars(child),
+    'max barrier': k
   }
   f = open(savePath, 'x')
   f.write(json.dumps(obj))
