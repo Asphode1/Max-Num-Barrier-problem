@@ -15,13 +15,14 @@ from ga.initSensor import initSensor
 
 # get initial data
 
-L = 40        # length of ROI
-H = 200       # height of ROI
+ROI_SIZE = 1                             # ROI size; 1 = small, 40 * 200; 2 = large, 100 * 500
 
-path = './data/initData/data_' + str(L) + '_' + str(H) + '.json'
+path = './data/initData/data_' + str(ROI_SIZE) + '.json'
 f = open(path, 'r')
 data = json.loads(f.read())
 
+L = int(data['ROIData']['L'])            # Length of ROI
+H = int(data['ROIData']['H'])            # Height of ROI
 R = int(data['sensorData']['range'])     # mobile sensor sensing range
 A = float(data['sensorData']['alpha'])   # mobile sensor sensing angle
 S = int(data['sSensor'])                 # Number of stationary sensors
@@ -29,7 +30,6 @@ M = int(data['mSensor'])                 # Number of mobile sensors
 DATA_PACK = 1                            # Index of data pack, from 1 to 10.
 
 # GA constants
-
 MAX_GENERATION = 1000     # Default: 1000
 CROSSOVER_RATE = 0.8      # Default: 0.8
 MUTATION_RATE = 0.05      # Default: 0.05
@@ -59,11 +59,11 @@ def startGA():
   savePath = './saves/' + nowshort + '.json'
 
   obj = {
-      'name': 'Saved data at ' + nowLong,
-      'method: Genetic Algorithm'
-      'population': [vars(i) for i in parents],
-      'best child': vars(child),
-      'max barrier': k
+    'name': 'Saved data at ' + nowLong,
+    'method: Genetic Algorithm'
+    'population': [vars(i) for i in parents],
+    'best child': vars(child),
+    'max barrier': k
   }
   f = open(savePath, 'x')
   f.write(json.dumps(obj))
