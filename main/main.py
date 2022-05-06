@@ -15,18 +15,19 @@ from ga.initSensor import initSensor
 
 # get initial data
 
-L = 40        # length of ROI
-H = 200       # height of ROI
+ROI_SIZE = 2  # size of ROI; 1 = small, 40 * 200; 2 = large, 100 * 500
 
-path = './data/initData/data_' + str(L) + '_' + str(H) + '.json'
+path = './data/initData/data_' + str(ROI_SIZE) + '.json'
 f = open(path, 'r')
 data = json.loads(f.read())
 
+L = int(data['ROIData']['L'])            # Length of ROI
+H = int(data['ROIData']['H'])            # Height of ROI
 R = int(data['sensorData']['range'])     # mobile sensor sensing range
 A = float(data['sensorData']['alpha'])   # mobile sensor sensing angle
 S = int(data['sSensor'])                 # Number of stationary sensors
 M = int(data['mSensor'])                 # Number of mobile sensors
-DATA_PACK = 2                            # Index of data pack, from 1 to 10.
+DATA_PACK = 1                            # Index of data pack, from 1 to 10.
 
 # GA constants
 
@@ -45,7 +46,7 @@ else:
 
 # start program using Genetic Algorithm
 def startGA():
-  dataList = getData(DATA_PACK)
+  dataList = getData(DATA_PACK, L, H)
   sensorList = createSensor(dataList, S, A)
   sortedSensor = initSensor(sensorList)
   parents = ga(sortedSensor, S, M, A, R, L, LARGEST_RANGE, MUTATION_RATE,

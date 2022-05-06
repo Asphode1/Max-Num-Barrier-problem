@@ -1,5 +1,9 @@
 {
   "name": "Initial data for large ROI",
+  "ROIData": {
+    "L": 500,
+    "H": 100
+  },
   "sensorData": {
     "range": 20,
     "alpha": 0.7854

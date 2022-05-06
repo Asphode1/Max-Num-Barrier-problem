@@ -1,6 +1,7 @@
 import sys
 sys.path.append('.')
 
+from math import sin, pi
 from utils.Point import Point
 
 class Sensor:
@@ -9,6 +10,14 @@ class Sensor:
     self.beta = beta
     self.range = range
     self.alpha = alpha
+
+  def largestRange(self):
+    lr = 0
+    if(0 <= self.alpha and self.alpha <= pi / 2):
+      lr = max(self.range, 2 * self.range * sin(self.alpha))
+    else:
+      lr = 2 * self.range
+    return lr
 
 class SortedSensor(Sensor):
   def __init__(self, pos: Point, range: float, beta: float, alpha: float, index: int) -> None:

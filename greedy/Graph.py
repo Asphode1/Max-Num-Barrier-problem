@@ -1,7 +1,10 @@
+import sys
+sys.path.append('.')
+
 from math import inf
 from random import shuffle
 
-from utils.Sensor import Sensor
+from utils.Sensor import SortedSensor
 from utils.distances import strongDist
 
 class WBG:
@@ -19,14 +22,8 @@ class WBG:
     return self
 
   def updateEdge(self, edge: list[list[int]]):
-    self.edge = edge
+    self.edge = edge.copy()
     return self
-
-  def initEdge(self, sensors: list[Sensor], maxDist: float):
-    for i in range(self.vertex):
-      for j in range(self.vertex):
-        if(strongDist(sensors, i, j) <= maxDist and i != j):
-          self.edge[i][j] = 1
 
   def removeEdge(self, v1: int, v2: int):
     self.edge[v1][v2] = 0
@@ -34,9 +31,8 @@ class WBG:
     return self
 
   def removePath(self, p: list[int]):
-    for i in range(len(p)):
-      for j in range(self.vertex):
-        self.edge[p[i]][j] = 0
+    for i in range(1, len(p) - 1):
+      self.edge[p[i]] = [0] * self.vertex
     return self
 
   def resetGraph(self):
@@ -139,10 +135,18 @@ class BG(WBG):
       edge[i] = [0] * v
     self.edge = edge
 
+  def initEdge(self, sensors: list[SortedSensor], maxDist: float, S: int, L: int):
+    for i in range(self.vertex - 1):
+      for j in range(i + 1, self.vertex):
+        if not(i == 0 and j == S + 1):
+          if(strongDist(sensors, i, j, S, L) <= maxDist):
+            self.edge[i][j] = 1
+    return self
+
   def getNeighbors(self, s: int) -> list[int]:
     nb = []
     for i in range(self.vertex):
-      if(self.edge[s][i] != 0):
+      if(self.edge[i][s] != 0):
         nb.append(i)
     shuffle(nb)
     return nb
@@ -159,4 +163,29 @@ class BG(WBG):
     path = []
     visited = [False] * self.vertex
     self.recurRDFS(v, visited, path)
+    return path
+
+  def findPathRecurRDFS(self, s: int, t: int, visited: list[int], before: list[int]) -> int:
+    visited[t] = True
+    if(s != t):
+      nb = self.getNeighbors(t)
+      for i in range(len(nb)):
+        if(not visited[nb[i]]):
+          before[t] = nb[i]
+          return self.findPathRecurRDFS(s, nb[i], visited, before)
+      return 0
+    return 1
+
+  def findPathRDFS(self, s: int, t: int) -> list[int]:
+    visited = [False] * self.vertex
+    before = [None] * self.vertex
+    self.findPathRecurRDFS(s, t, visited, before)
+    tmp = s
+    path = [s]
+    while(tmp != t):
+      if(tmp in before):
+        path.append(before.index(tmp))
+        tmp = before.index(tmp)
+      else:
+        break
     return path

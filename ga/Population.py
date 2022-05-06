@@ -1,8 +1,6 @@
 import sys
 sys.path.append('.')
 
-from math import sqrt
-from random import randint, random
 from greedy.Graph import BG
 from utils.Sensor import Sensor, SortedSensor
 
@@ -19,11 +17,20 @@ class Population:
     return self
 
   # TODO: change mutation algorithm
-  def mutation(self, rate: int):
+  def mutation(self, lst: list[SortedSensor], rate: int):
 
     return self
 
-  def start(self, lstSensor: list[SortedSensor] | list[Sensor], maxDist: float):
-    l = len(lstSensor)
-    sensorGraph = BG(l + 2)
-    sensorGraph.initEdge(lstSensor, maxDist)
+  # TODO: optimize sensorGraph
+  def start(self, graph: BG, maxK: int, S: int):
+    sensorGraph = BG(S + 2)
+    sensorGraph.updateEdge(graph.edge)
+    k = 0
+    while(k < maxK):
+      path = sensorGraph.findPathRDFS(0, sensorGraph.vertex - 1)
+      if(len(path) == 0):
+        break
+      self.data.append(path)
+      sensorGraph.removePath(path)
+      k += 1
+    return self

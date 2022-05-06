@@ -7,7 +7,7 @@ from utils.distances import minNum
 from utils.Sensor import SortedSensor
 from ga.Population import Population
 
-
+#TODO: fix fitness function
 def fitness(ind: Population, sensors: list[SortedSensor], s: int, m: int, a: float, r: int, l: int, lr: float) -> int:
   LIM = ceil(l / lr)
   k = 0
