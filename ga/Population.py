@@ -37,5 +37,4 @@ class Population:
         self.index.append(k)
       sensorGraph.removePath(path)
       k += 1
-    
     return self

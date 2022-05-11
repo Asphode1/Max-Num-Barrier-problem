@@ -7,19 +7,21 @@ from utils.distances import minNum
 from utils.Sensor import SortedSensor
 from ga.Population import Population
 
-#TODO: fix fitness function
 def fitness(ind: Population, sensors: list[SortedSensor], s: int, m: int, a: float, r: int, l: int, lr: float) -> int:
   LIM = ceil(l / lr)
   k = 0
   barriers = []
   i = 0
+  index = 0
+  prevIndex = 0
   barrier = []
   while(i < len(sensors)):
-    if(ind.index[i] == 0):
+    index = ind.index[i]
+    if(index == prevIndex):
       barrier.append(ind.data[i])
       i += 1
-    elif(ind.index[i] == 1):
-      barrier.append(ind.data[i])
+    else:
+      prevIndex = index
       barriers.append(barrier)
       barrier = []
       i += 1
