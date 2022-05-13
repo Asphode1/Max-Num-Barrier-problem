@@ -2,9 +2,9 @@ import sys
 sys.path.append('.')
 
 from random import randint
-from ga.Population import Population
+from ga.Population import Individua
 
-def parentSelect(lst: list[Population]) -> list[Population]:
+def parentSelect(lst: list[Individua; ]) -> list[Individua; ]:
   """select parents for crossover
 
   Args:

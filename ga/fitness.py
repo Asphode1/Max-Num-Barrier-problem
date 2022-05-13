@@ -5,11 +5,9 @@ from math import ceil, floor
 
 from utils.distances import minNum
 from utils.Sensor import SortedSensor
-from ga.Population import Population
+from ga.Individual import Individual
 
-def fitness(ind: Population, sensors: list[SortedSensor], s: int, m: int, a: float, r: int, l: int, lr: float) -> int:
-  LIM = ceil(l / lr)
-  k = 0
+def getBarrier(ind: Individual, sensors: SortedSensor) -> list[list[int]]:
   barriers = []
   i = 0
   index = 0
@@ -19,12 +17,17 @@ def fitness(ind: Population, sensors: list[SortedSensor], s: int, m: int, a: flo
     index = ind.index[i]
     if(index == prevIndex):
       barrier.append(ind.data[i])
-      i += 1
     else:
       prevIndex = index
       barriers.append(barrier)
       barrier = []
-      i += 1
+    i += 1
+  return barriers
+
+def fitness(ind: Individual, sensors: list[SortedSensor], s: int, m: int, a: float, r: int, l: int, lr: float) -> int:
+  LIM = ceil(l / lr)
+  k = 0
+  barriers = getBarrier(ind)
   totalCost = 0
   costs = []
   for barrier in barriers:

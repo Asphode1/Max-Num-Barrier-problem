@@ -4,12 +4,13 @@ sys.path.append('.')
 from math import ceil, floor
 from random import randint
 
-from ga.Population import Population
+from ga.Individual import Individual
 
-def crossover(p1: Population, p2: Population, rate: int) -> Population:
+# TODO: fix crossover
+def crossover(p1: Individual, p2: Individual, rate: int) -> Individual:
   l = p1.length
   crossLen = randint(floor(l / 3), ceil(l * 2 / 3))
-  child = Population(l)
+  child = Individual(l)
   data = [None] * l
   index = [None] * l
   startPos = randint(0, l - crossLen - 1)

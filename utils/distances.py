@@ -104,6 +104,18 @@ def checkIntersect(p1: Point, q1: Point, p2: Point, q2: Point) -> bool:
 """
   end
 """
+def getIntersect(p1: Point, q1: Point, p2: Point, q2: Point) -> Point:
+  if(onSegment(p1, p2, q2)):
+    return p1
+  elif(onSegment(q1, p2, q2)):
+    return q1
+  elif(onSegment(q2, p1, q1)):
+    return q2
+  elif(onSegment(p2, p1, q1)):
+    return p2
+  t1 = (q2.x - q1.x) / (p1.x - q1.x + q1.x - p2.x)
+  t2 = (q2.y - q1.y) / (p1.y - q1.y + q1.y - p2.y)
+  return Point(t1 * p1.x + (1 - t1) * q1.x, t2 * p1.y + (1 - t2) * q1.y)
 
 def checklineArcIntersect(p1: SortedSensor | Sensor, l1: Point, l2: Point) -> bool:
   p = getPoint(p1)[0]
